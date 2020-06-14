@@ -8,9 +8,10 @@ namespace BoatRentalSvc.Interfaces
 {
     public interface IBoatRentalBusinessLogic
     {
-        Task<BoatRental> RentBoat(int boatId, string customerName, DateTime From, DateTime To);
+        List<BoatRental> GetBoatRentals();
+        BoatRental GetBoatRental(int boatId, DateTime asOfTime);
+        Task<BoatRental> RentBoat(int boatId, string customerName, DateTime From);
         Task<BoatRental> ReturnBoat(int boatId, string customerName);
-        Task<List<BoatRental>> GetBoatRentals();
-        Task<BoatRental> GetBoatRental(int boatId, string customerName);
+        
     }
 }

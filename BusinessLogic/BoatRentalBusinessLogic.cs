@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BoatRentalSvc.BusinessLogic
 {
-    public class BoatRentalBusinessLogic: IBoatRentalBusinessLogic
+    public class BoatRentalBusinessLogic : IBoatRentalBusinessLogic
     {
         private BoatDbContext _dbContext;
         private IBoatBusinessLogic _boatBusinessLogic;
@@ -18,24 +18,77 @@ namespace BoatRentalSvc.BusinessLogic
             _boatBusinessLogic = boatBusinessLogic;
         }
 
-        public Task<BoatRental> GetBoatRental(int boatId, string customerName)
+        public BoatRental GetBoatRental(int boatId, DateTime asOfTime)
         {
-            throw new NotImplementedException();
+            using (_dbContext)
+            {
+                var result = _dbContext.BoatRentals.FirstOrDefault(x => x.BoatId == boatId && asOfTime >= x.StartTime && asOfTime <= x.EndTime);
+                return result;
+            }
         }
 
-        public Task<List<BoatRental>> GetBoatRentals()
+        public List<BoatRental> GetBoatRentals()
         {
-            throw new NotImplementedException();
+            using (_dbContext)
+            {
+                var result = _dbContext.BoatRentals?.ToList();
+                return result;
+            }
         }
 
-        public Task<BoatRental> RentBoat(int boatId, string customerName, DateTime From, DateTime To)
+        public async Task<BoatRental> RentBoat(int boatId, string customerName, DateTime From)
         {
-            throw new NotImplementedException();
+            BoatRental boatRental = new BoatRental
+            {
+                BoatId = boatId,
+                CustomerName = customerName,
+                StartTime = From,
+                EndTime = DateTime.MaxValue
+            };
+            if (ValidateRentalDetails(boatRental))
+            {
+                using(_dbContext)
+                {
+                    await  _dbContext.BoatRentals.AddAsync(boatRental);
+                    await _dbContext.SaveChangesAsync();
+                    return boatRental;
+                }
+            }
+            return null;
         }
 
-        public Task<BoatRental> ReturnBoat(int boatId, string customerName)
+        public async Task<BoatRental> ReturnBoat(int boatId, string customerName)
         {
-            throw new NotImplementedException();
+            using(_dbContext)
+            {
+                var boatRental = _dbContext.BoatRentals.FirstOrDefault(x => x.BoatId == boatId && x.CustomerName == customerName);
+                if(boatRental == null)
+                {
+                    throw new Exception($"No rented boat for this customer: {customerName} with Boat Id: {boatId}");
+                }
+                boatRental.EndTime = DateTime.Now;
+                _dbContext.BoatRentals.Update(boatRental);
+                await _dbContext.SaveChangesAsync();
+                return boatRental;
+            }
+        }
+
+        private bool ValidateRentalDetails(BoatRental boatRental)
+        {
+            using (_dbContext)
+            {
+                var result = _dbContext.Boats.FirstOrDefault(x => x.Id == boatRental.BoatId);
+                if (result == null)
+                {
+                    throw new Exception("Boat ID does not exist");
+                }
+            }
+            if (string.IsNullOrWhiteSpace(boatRental.CustomerName))
+                throw new Exception("Customer Name required");
+            if (boatRental.EndTime <= boatRental.StartTime)
+                throw new Exception("End time can't be less than or equal to Start time");
+
+            return true;
         }
     }
 }

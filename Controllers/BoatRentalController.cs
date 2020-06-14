@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace BoatRentalSvc.Controllers
 {
-    [System.Web.Http.RoutePrefix("api/boatRental")]
+    [System.Web.Http.RoutePrefix("api")]
     [ApiController]
     public class BoatRentalController : ControllerBase
     {
@@ -22,8 +22,10 @@ namespace BoatRentalSvc.Controllers
             _boatBusinessLogic = boatBusinessLogic;
             _boatRentalBusinessLogic = boatRentalBusinessLogic;
         }
+
+        #region Boat Registration/Deregistration/Fetch Endpoints
         [HttpGet]
-        [Route("getAllBoats")]
+        [Route("boat/getAllBoats")]
         public async Task<IActionResult> GetAllBoats()
         {
             try
@@ -38,7 +40,7 @@ namespace BoatRentalSvc.Controllers
             }
         }
         [HttpGet]
-        [Route("getBoats/{id}")]
+        [Route("boat/getBoats/{id}")]
         public async Task<IActionResult> GetBoatByID(int id)
         {
             try
@@ -54,7 +56,7 @@ namespace BoatRentalSvc.Controllers
             }
         }
         [HttpPost]
-        [Route("registerBoat")]
+        [Route("boat/registerBoat")]
         public async Task<IActionResult> RegisterBoat([Microsoft.AspNetCore.Mvc.FromBody] object json)
         {
             try
@@ -71,7 +73,7 @@ namespace BoatRentalSvc.Controllers
         }
 
         [HttpDelete]
-        [Route("deregisterBoat/{id}")]
+        [Route("boat/deregisterBoat/{id}")]
         public async Task<IActionResult> DeregisterBoat(int id)
         {
             try
@@ -88,6 +90,80 @@ namespace BoatRentalSvc.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        #endregion
 
+        #region Boat Rental Endpoints
+        [HttpGet]
+        [Route("boatRental/getAllRental")]
+        public async Task<IActionResult> GetAllRentals()
+        {
+            try
+            {
+                var result = _boatRentalBusinessLogic.GetBoatRentals();
+                if (result == null)
+                {
+                    return NotFound($"No Boat Rental Exists!!");
+                }
+                else
+                    return Ok(result);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route("boatRental/getRental/{id}/{asOfTime}")]
+        public async Task<IActionResult> GetRental(int id, string asOfTime)
+        {
+            try
+            {
+                DateTime parsedDate;
+                if (!DateTime.TryParse(asOfTime, out parsedDate))
+                    throw new Exception($"Invalid asOfTime {asOfTime}");
+                var result = _boatRentalBusinessLogic.GetBoatRental(id, parsedDate);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+        [HttpPost]
+        [Route("boatRental/rentBoat/{boatId}/{customerName}/{effectiveDate}")]
+        public async Task<IActionResult> RentBoat(int boatId, string customerName, string effectiveDate)
+        {
+            try
+            {
+                DateTime parsedDate;
+                if (!DateTime.TryParse(effectiveDate, out parsedDate))
+                    throw new Exception($"Invalid asOfTime {effectiveDate}");
+                var result = await _boatRentalBusinessLogic.RentBoat(boatId, customerName, parsedDate);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpPost]
+        [Route("boatRental/returnBoat/{boatId}/{customerName}")]
+        public async Task<IActionResult> ReturnBoat(int boatId, string customerName)
+        {
+            try
+            {
+                var result = await _boatRentalBusinessLogic.ReturnBoat(boatId, customerName);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        #endregion
     }
 }

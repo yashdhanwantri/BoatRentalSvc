@@ -10,7 +10,7 @@ namespace BoatRentalSvc.Models
     {
         [Key]
         public int RentalId { get; set; }
-        public int CustomerName { get; set; }
+        public string CustomerName { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public int BoatId { get; set; }
