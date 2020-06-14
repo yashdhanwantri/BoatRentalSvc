@@ -67,7 +67,10 @@ namespace BoatRentalSvc.BusinessLogic
             using(_boatDbContext)
             {
                 var result = _boatDbContext.Boats.FirstOrDefault(x => x.Id == boatId);
-                if (result != null)
+                var activeRental = _boatDbContext.BoatRentals.FirstOrDefault(x => x.BoatId == boatId && x.EndTime > DateTime.Now);
+                if (activeRental != null)
+                    throw new Exception("Boat can't be deleted as a rental is active");
+                if (result != null )
                 {
                     _boatDbContext.Boats.Remove(result);
                     await _boatDbContext.SaveChangesAsync();
