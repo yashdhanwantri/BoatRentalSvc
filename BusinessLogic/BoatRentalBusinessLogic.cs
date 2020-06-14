@@ -61,7 +61,7 @@ namespace BoatRentalSvc.BusinessLogic
         {
             using(_dbContext)
             {
-                var boatRental = _dbContext.BoatRentals.FirstOrDefault(x => x.BoatId == boatId && x.CustomerName == customerName);
+                var boatRental = _dbContext.BoatRentals.FirstOrDefault(x => x.BoatId == boatId && x.CustomerName == customerName && x.EndTime == DateTime.MaxValue);
                 if(boatRental == null)
                 {
                     throw new Exception($"No rented boat for this customer: {customerName} with Boat Id: {boatId}");
