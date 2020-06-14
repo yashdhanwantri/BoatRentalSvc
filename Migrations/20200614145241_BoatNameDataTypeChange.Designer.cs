@@ -4,14 +4,16 @@ using BoatRentalSvc.Classes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoatRentalSvc.Migrations
 {
     [DbContext(typeof(BoatDbContext))]
-    partial class BoatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200614145241_BoatNameDataTypeChange")]
+    partial class BoatNameDataTypeChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +35,7 @@ namespace BoatRentalSvc.Migrations
                     b.Property<decimal>("HourlyRate")
                         .HasColumnType("decimal(10,4)");
 
-                    b.Property<string>("ImagePath")
+                    b.Property<string>("Image")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

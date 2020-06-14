@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using BoatRentalSvc.BusinessLogic;
 using BoatRentalSvc.Classes;
+using BoatRentalSvc.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +33,22 @@ namespace BoatRentalSvc
             services.AddControllers();
             services.AddDbContext<BoatDbContext>
                 (item => item.UseSqlServer(Configuration.GetConnectionString("myConn")));
+            
+            //Automapper Configuration
+            var mappingConfig = new MapperConfiguration(mappingConfig =>
+            {
+                mappingConfig.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddTransient<IBoatBusinessLogic, BoatBusinessLogic>();
+            services.AddTransient<IBoatRentalBusinessLogic, BoatRentalBusinessLogic>();
+            //Configuring Swagger
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Boat Service API", Version = "v1" });
+            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,7 +58,12 @@ namespace BoatRentalSvc
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint("swagger/v1/swagger.json", "My API V1");
+                x.RoutePrefix = string.Empty;
+            });
             app.UseHttpsRedirection();
 
             app.UseRouting();

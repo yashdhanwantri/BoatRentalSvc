@@ -1,4 +1,5 @@
 ﻿using BoatRentalSvc.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,13 +14,13 @@ namespace BoatRentalSvc
         [Key]
         public int Id { get; set; }
         [Required]
-        public int BoatName { get; set; }
+        public string BoatName { get; set; }
         [Required]
         [Column(TypeName ="decimal(10,4)")]
         public decimal HourlyRate { get; set; }
         [Required]
-        public string Image { get; set; }
-
+        public string ImagePath { get; set; }
+        [JsonIgnore]
         public List<BoatRental> BoatRentals { get; set; }
     }
 }
