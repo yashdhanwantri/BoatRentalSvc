@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BoatRentalSvc.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,7 +11,7 @@ namespace BoatRentalSvc
     public class Boat
     {
         [Key]
-        public int Number { get; set; }
+        public int Id { get; set; }
         [Required]
         public int BoatName { get; set; }
         [Required]
@@ -18,5 +19,7 @@ namespace BoatRentalSvc
         public decimal HourlyRate { get; set; }
         [Required]
         public string Image { get; set; }
+
+        public List<BoatRental> BoatRentals { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BoatRentalSvc.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,14 @@ namespace BoatRentalSvc.Classes
         {
 
         }
-        DbSet<Boat> Boats { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BoatRental>()
+                .HasOne(p => p.Boat)
+                .WithMany(b => b.BoatRentals)
+                .HasForeignKey(p => p.BoatId);
+        }
+        public DbSet<BoatRental> BoatRentals { get; set; }
+        public DbSet<Boat> Boats { get; set; }
     }
 }
