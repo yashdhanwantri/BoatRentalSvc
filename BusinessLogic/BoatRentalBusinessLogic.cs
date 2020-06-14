@@ -82,6 +82,11 @@ namespace BoatRentalSvc.BusinessLogic
                 {
                     throw new Exception("Boat ID does not exist");
                 }
+                var availableToRent = _dbContext.BoatRentals.FirstOrDefault(x => x.BoatId == boatRental.BoatId && x.EndTime > boatRental.EndTime);
+                if(availableToRent!=null)
+                {
+                    throw new Exception("Boat Id is not available for rent at this moment, it is already rented to other user");
+                }
             }
             if (string.IsNullOrWhiteSpace(boatRental.CustomerName))
                 throw new Exception("Customer Name required");
