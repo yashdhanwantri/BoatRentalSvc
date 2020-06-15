@@ -48,6 +48,13 @@ namespace BoatRentalSvc
             {
                 x.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Boat Service API", Version = "v1" });
             });
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+            });
             
         }
 
@@ -65,7 +72,7 @@ namespace BoatRentalSvc
                 x.RoutePrefix = string.Empty;
             });
             app.UseHttpsRedirection();
-
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseRouting();
 
             app.UseAuthorization();

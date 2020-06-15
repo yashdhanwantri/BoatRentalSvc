@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace BoatRentalSvc.Controllers
 {
-    [System.Web.Http.RoutePrefix("api")]
+    [Route("api")]
     [ApiController]
     public class BoatRentalController : ControllerBase
     {
